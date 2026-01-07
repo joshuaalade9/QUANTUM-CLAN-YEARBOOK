@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quantum Clan Gallery</title>
+<!-- Google Fonts for a sleek, modern look -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
+<style>
+  body {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    padding-top: 200px;
+  }
+
+  /* Navigation styles */
+  nav {
+     position: fixed;
+    top: 0px;
+  left: 0;
+  z-index: 900; /* Keeps it on top of other elements */
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 0 20px rgba(0,255,255,0.2);
+
+  }
+  /* Class to show the nav */
+nav.show {
+  top: 0;
+}
+
+  /* Hamburger / Cancel toggle button for small screens */
+  .menu-toggle {
+    visibility: hidden;
+    display: none;
+    position: absolute;
+    top: 100px;
+    right: 60px;
+    width: 40px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    font-size: 1.5em;
+    color: #00ffe0;
+  }
+
+  /* Show toggle button on small screens */
+  @media(max-width: 768px) {
+    .menu-toggle {
+      display: flex;
+      visibility: visible;
+      top: 120px;
+    }
+  }
+
+  /* Top logos container */
+  .top-logos {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+
+  /* Subtitle under logos */
+  .subtitle {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1em;
+    text-align: center;
+    color: #00ffe0;
+    text-shadow: 0 0 10px #00ffe0;
+  }
+
+  /* Main nav container */
+  .nav-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+  }
+
+  /* Logo text on the left */
+  .logo-text {
+        font-family: 'Orbitron', monospace;
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #FF5E00, #00B2FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 94, 0, 0.5);
+  }
+
+  /* Nav links on the right */
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    padding-right: 50px;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: #00ffe0;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .nav-links a:hover {
+    background: rgba(0,255,224,0.2);
+    box-shadow: 0 0 10px #00ffe0;
+  }
+
+  /* Responsive - hide nav links on small screens by default, show when toggled */
+  @media(max-width: 768px) {
+    /* Hide nav links initially */
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      padding: 10px 0;
+    }
+    /* Show nav links when active */
+    .nav-links.show {
+      display: flex;
+    }
+    /* Adjust nav container */
+    .nav-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    /* Adjust logo text margin */
+    .logo-text {
+      margin-top: 10px;
+    }
+  }
+
+  /* Header styles */
+  header {
+    padding: 30px 20px;
+    text-align: center;
+    background: transparent;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0,255,255,0.2);
+  }
+
+  header h1 {
+    font-size: 3em;
+    letter-spacing: 2px;
+    color: #ffffff;
+    text-shadow: 0 0 10px #00B2FF, 0 0 20px #000000;
+    margin: 0;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 40px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .photo-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    backdrop-filter: blur(5px);
+  }
+
+  .photo-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0,255,255,0.6);
+    border-color: #00ffe0;
+  }
+
+  .photo-card img {
+    width: 100%;
+    display: block;
+    height: auto;
+  }
+
+  /* Modal styles with glowing image */
+  .modal {
+    display: none;
+    position: fixed; 
+    z-index: 999; 
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Image with glow effect inside modal */
+  .modal-content {
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 15px;
+    box-shadow: 0 0 10px #00ffe0, inset 0 0 5px #00ffe0;
+    animation: pulse 1s infinite alternate;
+    transition: all 0.3s ease;
+  }
+
+  @keyframes pulse {
+    from { box-shadow: 0 0 40px #00ffe0, inset 0 0 20px #00ffe0; }
+    to { box-shadow: 0 0 60px #00ffe0, inset 0 0 30px #00ffe0; }
+  }
+
+  /* Close Button with glow */
+  .close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #00ffe0;
+    font-size: 3em;
+    font-weight: bold;
+    cursor: pointer;
+    text-shadow: 0 0 10px #00ffe0, 0 0 20px #00ffe0;
+  }
+
+  .close:hover {
+    color: #fff;
+    text-shadow: 0 0 20px #fff, 0 0 30px #00ffe0;
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 600px) {
+    header h1 {
+      font-size: 2em;
+    }
+    .close {
+      font-size: 2em;
+    }
+  }
+  /* Contact Section */
+        .contact {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .contact-form {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 94, 0, 0.2);
+            border-radius: 10px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #FF5E00;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 94, 0, 0.3);
+            color: white;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #FF5E00;
+            box-shadow: 0 0 20px rgba(255, 94, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #FF5E00, #00B2FF);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 94, 0, 0.5);
+        }
+
+        .contact-info {
+            padding: 40px;
+        }
+
+        .contact-info h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ffffff, #FF5E00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .info-item {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #FF5E00, #00B2FF);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .info-details h4 {
+            color: #FF5E00;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .info-details p {
+            opacity: 0.8;
+        }
+
+
+   /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 1px solid rgba(255, 94, 0, 0.2);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: #FF5E00;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: #00B2FF;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .copyright {
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+
+        .copyright a {
+            color: #FF5E00;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .copyright a:hover {
+            color: #00B2FF;
+            text-shadow: 0 0 10px currentColor;
+        }
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav id="navbar11">
+  <!-- Hamburger / Cancel toggle button -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu" aria-expanded="false" role="button" aria-pressed="false">
+    <span class="icon">&#9776;</span> <!-- Hamburger icon -->
+  </button>
+  
+  <!-- Top logos -->
+  <div class="top-logos">
+    <img src="NAPS LOGO.png" height="35px"  width="40px" alt="Logo 1" />
+    <img src="uniabuja logo.png"  height="35px"  width="55px" alt="Logo 2" />
+  </div>
+  <!-- Subtitle under logos -->
+ <h1 class="subtitle" style="font-size: 2rem;">QUANTUM CLAN</h1>
+                <div class="subtitle">University of Abuja</div>
+                <div class="subtitle">Physics Department Graduating Class of 2025</div>
+          
+
+  
+  
+  <!-- Main container for left logo text and right links -->
+  <div class="nav-container">
+    <div class="logo-text">YÓÓ DÁÁ</div>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="#" style="background-color: #ffffff; color: #FF5E00;">Gallery</a>
+      <a href="index.html#opener-div">About</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <h1>Quantum Clan Gallery</h1>
+  <div class="subtitle">Graduating class of 2025</div>
+</header>
+
+<div class="gallery">
+  <!-- Replace with your images -->
+  <div class="photo-card">
+    <img src="gallery/GAL (1).jpeg" alt="Student 1" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/group c.jpeg" alt="Student 1" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/group e.jpeg" alt="Student 2" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/group d.jpeg" alt="Student 3" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/group11.jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/group i.jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/group f.jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/QC1 (3).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/group2.jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/group g.jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL  (1).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL  (2).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL  (3).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL  (4).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL  (5).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL (5).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL (6).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL (7).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL (8).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (3).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GL (9).jpg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (2).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (4).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (6).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (7).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (8).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (9).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (10).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (11).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (12).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (13).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (14).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (15).jpeg" alt="Student 4" />
+  </div>
+    <div class="photo-card">
+    <img src="gallery/GAL (20).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (16).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (17).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (18).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (19).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (21).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (22).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (23).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GAL (24).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (3).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (2).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (4).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (7).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (5).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (1).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (6).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (8).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (9).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (10).jpeg" alt="Student 4" />
+  </div>
+   <div class="photo-card">
+    <img src="gallery/GGG (13).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (11).jpeg" alt="Student 4" />
+  </div>
+  <div class="photo-card">
+    <img src="gallery/GGG (12).jpeg" alt="Student 4" />
+  </div>
+  <!-- Add more images as needed -->
+</div>
+
+<!-- The Modal with glowing image -->
+<div id="imageModal" class="modal">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="modalImage" src="gallery/enlarged image.png" alt="Enlarged Image" />
+</div>
+
+
+<!-- Contact Section -->
+    <section class="contact" id="contact">
+        <h2 class="section-title">Get In Touch</h2>
+        <div class="contact-container">
+            <div class="contact-form">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+            <div class="contact-info">
+                <h3>Connect With Us</h3>
+                <div class="info-item">
+                    <div class="info-icon">📧</div>
+                    <div class="info-details">
+                        <h4>Email</h4>
+                        <p>aticaltechinnovations@gmail.com</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">📱</div>
+                    <div class="info-details">
+                        <h4>Phone</h4>
+                        <p>+234 8102341309, 09158915911</p>
+                    </div>
+            </div>
+        </div>
+    </section>
+   <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+      <a href="guy.html">Gallery</a>
+      <a href="index.html#opener-div">About</a>
+      <a href="index.html#contact">Contact</a>
+            </div>
+            <p class="copyright">© 2025 iCALTECH INNOVATIONS. All rights reserved. In character and learning. | Design: <a href="https://templatemo.com" target="_blank" rel="nofollow noopener">iCALTECH INNOVATIONS</a></p>
+        </div>
+    </footer>
+
+
+<script>
+  // Toggle menu and icon
+  const menuToggle = document.getElementById('menuToggle');
+  const iconSpan = menuToggle.querySelector('.icon');
+  const navLinks = document.getElementById('navLinks');
+
+  menuToggle.addEventListener('click', () => {
+    const expanded = menuToggle.getAttribute('aria-expanded') === 'true' || false;
+    // Toggle ARIA attributes for accessibility
+    menuToggle.setAttribute('aria-expanded', String(!expanded));
+    menuToggle.setAttribute('aria-pressed', String(!expanded));
+    // Toggle the menu display
+    navLinks.classList.toggle('show');
+    // Switch icon
+    if (!expanded) {
+      // Change to cancel icon
+      iconSpan.innerHTML = '&times;';
+    } else {
+      // Revert to hamburger icon
+      iconSpan.innerHTML = '&#9776;';
+    }
+  });
+
+  // Optional: allow keyboard toggling
+  menuToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.keyCode === 13 || e.keyCode === 32) {
+      e.preventDefault();
+      menuToggle.click();
+    }
+  });
+
+  // Modal functionality for images
+  const modal = document.getElementById('imageModal');
+  const navbar12 = document.getElementById('navbar11');
+  const modalImg = document.getElementById('modalImage');
+  const closeBtn = document.getElementsByClassName('close')[0];
+
+  document.querySelectorAll('.photo-card img').forEach(img => {
+    img.addEventListener('click', () => {
+      modal.style.display = 'flex';
+      modalImg.src = img.src;
+      modalImg.alt = img.alt;
+    });
+  });
+
+  // Close modal
+  closeBtn.onclick = () => {
+    modal.style.display = 'none';
+  };
+
+  window.onclick = (event) => {
+    if (event.target == modal) {
+      modal.style.display = 'none';
+    }
+  };
+
+  const nav = document.querySelector('nav');
+let lastScrollTop = 0;
+let scrollTimeout;
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY === 0) {
+    // At the top of the page, show navbar fully
+    nav.classList.add('show');
+  } else {
+    // When scrolling down, show navbar
+    if (window.scrollY > lastScrollTop) {
+      nav.classList.add('show');
+      navbar12.style.top = '-100px';
+    }
+    else {
+      // When scrolling up, show navbar
+      nav.classList.add('show');
+      navbar12.style.top = '0px';
+  }
+}
+  
+  lastScrollTop = window.scrollY;
+
+  // Reset the hide timeout
+  if (scrollTimeout) clearTimeout(scrollTimeout);
+
+  // Hide the navbar after 2 seconds of no scrolling
+  scrollTimeout = setTimeout(() => {
+    // Optional: hide when not at top
+    if (window.scrollY !== 0) {
+      nav.classList.remove('show');
+    }
+  }, 500);
+});
+
+ // Form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+         
+            alert('Message sent! We\'ll get back to you shotly, thenk you for reaching out to iCALTECH INNOVATIONS.');
+            this.reset();
+        });
+
+</script>
+
+</body>
+</html>
